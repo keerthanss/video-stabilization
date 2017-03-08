@@ -17,7 +17,7 @@ while(1):
     ret, frame = cap.read()
     gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
 
-    points = EF.getFeatures(gray, draw=True)
+    points, descriptor = EF.getFeatures(gray, draw=True)
     triangleList = EF.delaunayTriangulation(gray, points, draw=True)
 
     cv2.imshow('frame',gray)

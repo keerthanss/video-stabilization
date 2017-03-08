@@ -2,31 +2,22 @@ import cv2
 import numpy as np
 
 def getFeatures(img, draw=False):
-    # # Initiate STAR detector
-    # orb = cv2.ORB_create()
-    #
-    # # find the keypoints with ORB
-    # kp = orb.detect(img,None)
-    # print kp
-    # # compute the descriptors with ORB
-    # kp, des = orb.compute(img, kp)
-    #
-    # # draw only keypoints location,not size and orientation
-    # img2 = cv2.drawKeypoints(img,kp,img,color=(0,255,0), flags=0)
+    # Initiate STAR detector
+    orb = cv2.ORB_create(nfeatures=500)
 
-    corners = cv2.goodFeaturesToTrack(img,100,0.01,10)
-    corners = np.int0(corners)
-    points = []
-    for i in corners:
-        x,y = i.ravel()
-        points.append((x,y))
+    # find the keypoints with ORB
+    keyPoints = orb.detect(img,None)
 
-    if draw:
-        point_color = (255,0,0)
-        for p in points:
-            cv2.circle( img, p, 2, point_color, -1 )
+    pointsList = []
+    for point in keyPoints:
+        x = point.pt[0]
+        y = point.pt[1]
+        pointsList.append( (x,y) )
 
-    return points
+    # compute the descriptors with ORB
+    keyPoints, des = orb.compute(img, keyPoints)
+
+    return (pointsList, des)
 
 def delaunayTriangulation(img, points, draw=False):
     size = img.shape

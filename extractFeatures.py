@@ -57,3 +57,15 @@ def delaunayTriangulation(img, points, draw=False):
                 cv2.line(img, pt3, pt1, delaunay_color, 1)
 
     return triangleList
+
+def matchFeatures(old_des, new_des):
+    # create BFMatcher object
+    bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+
+    # Match descriptors.
+    matches = bf.match(old_des,new_des)
+
+    # Sort them in the order of their distance.
+    matches = sorted(matches, key = lambda x:x.distance)
+    print matches
+    return matches

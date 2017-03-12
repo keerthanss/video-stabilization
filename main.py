@@ -12,20 +12,60 @@ feature_params = dict( maxCorners = 100,
 videofilename = argv[1]
 cap = cv2.VideoCapture(videofilename)
 
+trajectories = []
+
 ret, prev_frame = cap.read()
 prev_gray = cv2.cvtColor(prev_frame,cv2.COLOR_BGR2GRAY)
 
-prev_points, prev_descriptor = EF.getFeatures(prev_gray, draw=True)
+prev_keyPoints, prev_descriptor = EF.getFeatures(prev_gray, draw=True)
+prev_points = EF.getPointsList(prev_keyPoints)
 prev_triangleList = EF.delaunayTriangulation(prev_gray, prev_points, draw=True)
+
+for p in prev_points:
+    trajectories.append([p])
+
+print len(trajectories)
 
 while(1):
     ret, frame = cap.read()
     gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
 
-    points, descriptor = EF.getFeatures(gray, draw=True)
+    keyPoints, descriptor = EF.getFeatures(gray, draw=True)
+    points = EF.getPointsList(keyPoints)
+
     matches = EF.matchFeatures(prev_descriptor, descriptor)
     triangleList = EF.delaunayTriangulation(gray, points, draw=True)
 
+    for m in matches:
+        train = m.trainIdx #corresponding to current frame
+        query = m.queryIdx #corresponding to previous frame
+
+        new_p = keyPoints[train]
+        old_p = prev_keyPoints[query]
+
+        #the two points that match
+        new_p = (new_p.pt[0], new_p.pt[1])
+        old_p = (old_p.pt[0], old_p.pt[1])
+
+        #need to find old_p in trajectories and append new_p into it
+        for i in xrange(len(trajectories)):
+            if old_p == trajectories[i][-1]:
+                trajectories[i].append(new_p)
+
+                #TODO: Fix this. Why does it say new_p is not present in points when 'points' is obtained from keyPoints only?
+                try:
+                    points.remove(new_p)
+                except Exception as e:
+                    print e
+
+    #append those points which form the start of a new trajectory
+    for p in points:
+        trajectories.append([p])
+
+    print trajectories[0:2], len(trajectories)
+
+    prev_frame, prev_keyPoints, prev_descriptor = frame, keyPoints, descriptor
+    
     cv2.imshow('frame',gray)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break

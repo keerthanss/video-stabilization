@@ -8,16 +8,18 @@ def getFeatures(img, draw=False):
     # find the keypoints with ORB
     keyPoints = orb.detect(img,None)
 
+    # compute the descriptors with ORB
+    keyPoints, des = orb.compute(img, keyPoints)
+
+    return (keyPoints, des)
+
+def getPointsList(keyPoints):
     pointsList = []
     for point in keyPoints:
         x = point.pt[0]
         y = point.pt[1]
         pointsList.append( (x,y) )
-
-    # compute the descriptors with ORB
-    keyPoints, des = orb.compute(img, keyPoints)
-
-    return (pointsList, des)
+    return pointsList
 
 def delaunayTriangulation(img, points, draw=False):
     size = img.shape
@@ -58,14 +60,11 @@ def delaunayTriangulation(img, points, draw=False):
 
     return triangleList
 
-def matchFeatures(old_des, new_des):
+def matchFeatures(old_des,new_des):
     # create BFMatcher object
     bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
-
     # Match descriptors.
     matches = bf.match(old_des,new_des)
-
     # Sort them in the order of their distance.
     matches = sorted(matches, key = lambda x:x.distance)
-    print matches
     return matches

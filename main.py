@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from sys import argv
+import gst
 import extractFeatures as EF
 
 
@@ -16,7 +17,7 @@ trajectories = []
 
 ret, prev_frame = cap.read()
 prev_gray = cv2.cvtColor(prev_frame,cv2.COLOR_BGR2GRAY)
-
+frame_number = 1
 prev_keyPoints, prev_descriptor = EF.getFeatures(prev_gray, draw=True)
 prev_points = EF.getPointsList(prev_keyPoints)
 prev_triangleList = EF.delaunayTriangulation(prev_gray, prev_points, draw=True)
@@ -25,9 +26,10 @@ for p in prev_points:
     trajectories.append([p])
 
 print len(trajectories)
-
+retired_trajectories = []
 while(1):
     ret, frame = cap.read()
+    frame_number +=1
     gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
 
     keyPoints, descriptor = EF.getFeatures(gray, draw=True)
@@ -44,8 +46,8 @@ while(1):
         old_p = prev_keyPoints[query]
 
         #the two points that match
-        new_p = (new_p.pt[0], new_p.pt[1])
-        old_p = (old_p.pt[0], old_p.pt[1])
+        new_p = (new_p.pt[0], new_p.pt[1],frame_number)
+        old_p = (old_p.pt[0], old_p.pt[1],frame_number-1)
 
         #need to find old_p in trajectories and append new_p into it
         for i in xrange(len(trajectories)):
@@ -63,9 +65,12 @@ while(1):
         trajectories.append([p])
 
     print trajectories[0:2], len(trajectories)
-
+    for t in trajectories:
+        if t[-1][2] != frame_number:
+            retired_trajectories.append(t)
+            trajectories.remove(t)
     prev_frame, prev_keyPoints, prev_descriptor = frame, keyPoints, descriptor
-    
+
     cv2.imshow('frame',gray)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break

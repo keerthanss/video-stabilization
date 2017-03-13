@@ -13,6 +13,7 @@ feature_params = dict( maxCorners = 100,
 videofilename = argv[1]
 cap = cv2.VideoCapture(videofilename)
 
+#list of all active trajectories. Each trajectories is individually a list that starts as a single point in space&time
 trajectories = []
 
 ret, prev_frame = cap.read()
@@ -22,8 +23,9 @@ prev_keyPoints, prev_descriptor = EF.getFeatures(prev_gray, draw=True)
 prev_points = EF.getPointsList(prev_keyPoints)
 prev_triangleList = EF.delaunayTriangulation(prev_gray, prev_points, draw=True)
 
+#Create new trajectories for all
 for p in prev_points:
-    trajectories.append([p])
+    trajectories.append([[p[0],p[1],frame_number]])
 
 print len(trajectories)
 retired_trajectories = []
@@ -62,7 +64,7 @@ while(1):
 
     #append those points which form the start of a new trajectory
     for p in points:
-        trajectories.append([p])
+        trajectories.append([[p[0],p[1],frame_number]])
 
     print trajectories[0:2], len(trajectories)
     for t in trajectories:

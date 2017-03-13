@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 from sys import argv
-import gst
+#import gst
 import extractFeatures as EF
 
 
@@ -25,7 +25,7 @@ prev_triangleList = EF.delaunayTriangulation(prev_gray, prev_points, draw=True)
 
 #Create new trajectories for all
 for p in prev_points:
-    trajectories.append([[p[0],p[1],frame_number]])
+    trajectories.append([ (p[0],p[1],frame_number) ])
 
 print len(trajectories)
 retired_trajectories = []
@@ -54,23 +54,26 @@ while(1):
         #need to find old_p in trajectories and append new_p into it
         for i in xrange(len(trajectories)):
             if old_p == trajectories[i][-1]:
-                trajectories[i].append(new_p)
+                trajectories[i].append( new_p )
 
-                #TODO: Fix this. Why does it say new_p is not present in points when 'points' is obtained from keyPoints only?
+                #TODO: Fix this. Error is thrown whenever trajectories intersect.
                 try:
                     points.remove(new_p)
                 except Exception as e:
-                    print e
+                    #print e
+                    pass
 
     #append those points which form the start of a new trajectory
     for p in points:
-        trajectories.append([[p[0],p[1],frame_number]])
+        trajectories.append([ (p[0],p[1],frame_number) ])
 
     print trajectories[0:2], len(trajectories)
     for t in trajectories:
         if t[-1][2] != frame_number:
             retired_trajectories.append(t)
             trajectories.remove(t)
+
+    print len(retired_trajectories), len(trajectories)
     prev_frame, prev_keyPoints, prev_descriptor = frame, keyPoints, descriptor
 
     cv2.imshow('frame',gray)

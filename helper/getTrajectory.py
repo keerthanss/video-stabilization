@@ -1,3 +1,4 @@
+#step 2 
 from data import trajectory, transform_param
 
 def getTrajectory(frame_transforms):

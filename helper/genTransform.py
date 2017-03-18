@@ -1,3 +1,4 @@
+#step4
 from data import trajectory, transform_param
 
 def genTransform(frame_transforms, smooth_trajectories):

@@ -37,8 +37,11 @@ while(1):
     keyPoints, descriptor = EF.getFeatures(gray, draw=True)
     points = EF.getPointsList(keyPoints)
 
+    neighbors = EF.delaunayTriangulation(gray, points, draw=True, neighbors=True) #set
+    print neighbors
+
     matches = EF.matchFeatures(prev_descriptor, descriptor)
-    triangleList = EF.delaunayTriangulation(gray, points, draw=True)
+
 
     for m in matches:
         train = m.trainIdx #corresponding to current frame

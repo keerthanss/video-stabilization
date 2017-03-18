@@ -21,7 +21,7 @@ def getPointsList(keyPoints):
         pointsList.append( (x,y) )
     return pointsList
 
-def delaunayTriangulation(img, points, draw=False):
+def delaunayTriangulation(img, points, draw=False, neighbors=False):
     size = img.shape
     r = (0, 0, size[1], size[0])
     subdiv  = cv2.Subdiv2D(r)
@@ -58,9 +58,34 @@ def delaunayTriangulation(img, points, draw=False):
                 cv2.line(img, pt2, pt3, delaunay_color, 1)
                 cv2.line(img, pt3, pt1, delaunay_color, 1)
 
-    return triangleList
+    if not neighbors:
+        return triangleList
+    else:
+        neighbors = set() #list of edges / list of neighbors
 
-def matchFeatures(old_des,new_des):
+        def insert(p1, p2):
+            if p1[0] < p2[0]:
+                neighbors.add( (p1,p2) )
+            elif p1[0] == p2[0] and p1[1] < p2[1]:
+                neighbors.add( (p1,p2) )
+            else:
+                neighbors.add( (p2,p1) )
+
+        for t in triangleList:
+
+            pt1 = (t[0], t[1])
+            pt2 = (t[2], t[3])
+            pt3 = (t[4], t[5])
+
+            insert(pt1, pt2)
+            insert(pt2, pt3)
+            insert(pt3, pt1)
+
+        return neighbors #returning a set
+
+
+
+def matchFeatures(old_des,new_des, neighbors):
     # create BFMatcher object
     bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
     # Match descriptors.
@@ -68,3 +93,27 @@ def matchFeatures(old_des,new_des):
     # Sort them in the order of their distance.
     matches = sorted(matches, key = lambda x:x.distance)
     return matches
+
+def knnMatchFeatures(old_kp, old_des, new_kp, new_des, neighbors):
+    # create BFMatcher object
+    bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+
+    #find k best matches
+    #what's an okay value for k? 10? TODO
+    matches = bf.knnMatch(old_des, new_des, k=10)
+
+    best = []
+    for mlist in matches:
+        dist = []
+        old_p = old_kp[ mlist[0].queryIdx ]
+        old_p = (old_p.pt[0], old_p.pt[1])
+
+        adj_pts = []
+        for p,q in neighbors:
+            if p == old_p:
+                adj_pts.append(q)
+            elif q == old_p:
+                adj_pts.append(p)
+
+
+        for m in mlist:

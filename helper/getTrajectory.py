@@ -2,6 +2,7 @@
 from data import trajectory, transform_param
 
 def getImageTrajectory(frame_transforms):
+    print "Getting trajectories...",
     t = trajectory(0,0,0)
     image_trajectory = [] #trajectory at all frames
 
@@ -10,4 +11,5 @@ def getImageTrajectory(frame_transforms):
         image_trajectory.append(t2)
         t = t2
 
+    print "Done"
     return image_trajectory

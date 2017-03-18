@@ -2,6 +2,7 @@
 from data import trajectory, transform_param
 
 def genSmoothTransform(frame_transforms, smooth_trajectories):
+    print "Obtaining smooth transformation...",
     t = trajectory(0,0,0)
     new_transforms = []
 
@@ -14,5 +15,5 @@ def genSmoothTransform(frame_transforms, smooth_trajectories):
         tp2 = transform_param(ft.dx + tp.dx, ft.dy + tp.dy, ft.da + tp.da)
 
         new_transforms.append(tp2)
-
+    print "Done"
     return new_transforms

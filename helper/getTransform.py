@@ -1,11 +1,25 @@
 import numpy as np
 import cv2
-from applyTransform import getFrameCount
 import math
 from data import transform_param
 
-def getFrameToFrameTransform(videofilename, out_transform="transform.txt"):
-    max_frames = getFrameCount(videofilename)
+def getFrameCount(videofilename):
+    #print "Getting frame count"
+    cap = cv2.VideoCapture(videofilename)
+    frame_count= 0
+    while(True):
+        ret, frame = cap.read()
+        if ret is True:
+            frame_count+=1
+        else:
+            break
+        # cv2.imshow('counting', frame)
+        # cv2.waitKey(20)
+    #print "Frame count = " + str(frame_count)
+    cap.release()
+    return frame_count
+
+def getFrameToFrameTransform(videofilename, max_frames, out_transform="transform.txt"):
     print "Getting frame to frame transform...",
 
     cap = cv2.VideoCapture(videofilename)

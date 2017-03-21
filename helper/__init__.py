@@ -3,5 +3,5 @@
 from averageWindow import getSmoothedTrajectory
 from genTransform import genSmoothTransform
 from getTrajectory import getImageTrajectory
-from getTransform import getFrameToFrameTransform
+from getTransform import getFrameToFrameTransform, getFrameCount
 from applyTransform import applyTransformation

@@ -10,6 +10,8 @@ def getFrameToFrameTransform(videofilename, out_transform="transform.txt"):
 
     cap = cv2.VideoCapture(videofilename)
 
+    fOut = open('frame_to_frame_changes.txt','w')
+
     ret, prev_frame = cap.read()
     prev_grey = cv2.cvtColor(prev_frame,cv2.COLOR_BGR2GRAY)
 
@@ -30,8 +32,8 @@ def getFrameToFrameTransform(videofilename, out_transform="transform.txt"):
 
 
 
-        prev_corner = np.empty(prev_grey.shape)
-        cur_corner = np.empty(prev_grey.shape)
+        prev_corner = []
+        cur_corner = []
         prev_corner_2 = []
         cur_corner_2 = []
         status = []
@@ -50,7 +52,7 @@ def getFrameToFrameTransform(videofilename, out_transform="transform.txt"):
         prev_corner_2 = np.asarray(prev_corner_2)
         cur_corner_2 = np.asarray(cur_corner_2)
 
-        T = np.zeros(shape=prev_grey.shape)
+        # T = np.zeros(shape=prev_grey.shape)
         T = cv2.estimateRigidTransform(prev_corner_2,cur_corner_2,False)
         if T is None:
             T = last_T
@@ -61,6 +63,8 @@ def getFrameToFrameTransform(videofilename, out_transform="transform.txt"):
         da = math.atan2(T[1,0], T[0,0])
 
         prev_to_cur_transform.append(transform_param(dx,dy,da))
+
+        fOut.write(str(dx)+'\t'+str(dy)+'\t'+str(da)+'\n')
 
         prev = cur
         prev_grey = cur_grey

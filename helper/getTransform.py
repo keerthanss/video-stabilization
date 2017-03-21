@@ -19,12 +19,10 @@ def getFrameCount(videofilename):
     cap.release()
     return frame_count
 
-def getFrameToFrameTransform(videofilename, max_frames, out_transform="transform.txt"):
+def getFrameToFrameTransform(videofilename, max_frames):
     print "Getting frame to frame transform...",
 
     cap = cv2.VideoCapture(videofilename)
-
-    fOut = open('frame_to_frame_changes.txt','w')
 
     ret, prev_frame = cap.read()
     prev_grey = cv2.cvtColor(prev_frame,cv2.COLOR_BGR2GRAY)
@@ -35,7 +33,6 @@ def getFrameToFrameTransform(videofilename, max_frames, out_transform="transform
 
     f = 0
     last_T = []
-    out_transform = open(out_transform, 'w')
     while(True):
         last_T = np.zeros(shape=prev_grey.shape)
         ret, cur = cap.read()
@@ -78,12 +75,9 @@ def getFrameToFrameTransform(videofilename, max_frames, out_transform="transform
 
         prev_to_cur_transform.append(transform_param(dx,dy,da))
 
-        fOut.write(str(dx)+'\t'+str(dy)+'\t'+str(da)+'\n')
-
         prev = cur
         prev_grey = cur_grey
 
-        out_transform.write("Frame: "+str(k)+"/"+str(max_frames)+" - good optical flow: "+str(len(prev_corner_2))+"\n")
         k+=1
 
     cap.release()

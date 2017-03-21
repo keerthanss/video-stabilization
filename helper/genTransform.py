@@ -5,8 +5,6 @@ def genSmoothTransform(frame_transforms, smooth_trajectories):
     t = trajectory(0,0,0)
     new_transforms = []
 
-    fOut = open('smooth_changes.txt','w')
-
     for i in range(len(frame_transforms)):
 
         ft = frame_transforms[i] #current
@@ -16,8 +14,6 @@ def genSmoothTransform(frame_transforms, smooth_trajectories):
         t.a += ft.da
         tp = transform_param(st.x - t.x, st.y - t.y, st.a - t.a)
         tp2 = transform_param(ft.dx + tp.dx, ft.dy + tp.dy, ft.da + tp.da)
-
-        fOut.write(str(tp2.dx)+'\t'+str(tp2.dy)+'\t'+str(tp2.da)+'\n')
 
         new_transforms.append(tp2)
 

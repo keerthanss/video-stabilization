@@ -45,8 +45,8 @@ def applyTransformation(videofilename, smooth_transform, frame_dim, max_frames):
 
         out.write(cur2)
 
-        cv2.imshow("Before", cur)
-        cv2.imshow("After", cur2)
+        cv2.imshow("Before stabilization", cur)
+        cv2.imshow("After stabilization", cur2)
         #
         # canvas = np.zeros((rows,2*cols+10,3))
         # cur_grey = cv2.cvtColor(cur,cv2.COLOR_BGR2GRAY)

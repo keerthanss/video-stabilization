@@ -3,6 +3,8 @@ from data import trajectory, transform_param
 def getSmoothedTrajectory(unsmoothed_trajectory,smoothing_radius):
     print "Smoothening trajectories...",
     smoothed_trajectory = []
+    fOut = open('smooth_changes.txt','w')
+
     for i in range(len(unsmoothed_trajectory)):
         count = 0
         sum_t = trajectory(0,0,0)
@@ -17,5 +19,7 @@ def getSmoothedTrajectory(unsmoothed_trajectory,smoothing_radius):
         average_point = trajectory(sum_t.x/count,sum_t.y/count,sum_t.a/count)
 
         smoothed_trajectory.append(average_point)
+        fOut.write(str(average_point.x)+'\t'+str(average_point.y)+'\t'+str(average_point.a)+'\n')
+
     print "Done"
     return smoothed_trajectory

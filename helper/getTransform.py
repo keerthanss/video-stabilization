@@ -1,11 +1,25 @@
 import numpy as np
 import cv2
-from applyTransform import getFrameCount
 import math
 from data import transform_param
 
-def getFrameToFrameTransform(videofilename, out_transform="transform.txt"):
-    max_frames = getFrameCount(videofilename)
+def getFrameCount(videofilename):
+    #print "Getting frame count"
+    cap = cv2.VideoCapture(videofilename)
+    frame_count= 0
+    while(True):
+        ret, frame = cap.read()
+        if ret is True:
+            frame_count+=1
+        else:
+            break
+        # cv2.imshow('counting', frame)
+        # cv2.waitKey(20)
+    #print "Frame count = " + str(frame_count)
+    cap.release()
+    return frame_count
+
+def getFrameToFrameTransform(videofilename, max_frames):
     print "Getting frame to frame transform...",
 
     cap = cv2.VideoCapture(videofilename)
@@ -19,7 +33,6 @@ def getFrameToFrameTransform(videofilename, out_transform="transform.txt"):
 
     f = 0
     last_T = []
-    out_transform = open(out_transform, 'w')
     while(True):
         last_T = np.zeros(shape=prev_grey.shape)
         ret, cur = cap.read()
@@ -30,8 +43,8 @@ def getFrameToFrameTransform(videofilename, out_transform="transform.txt"):
 
 
 
-        prev_corner = np.empty(prev_grey.shape)
-        cur_corner = np.empty(prev_grey.shape)
+        prev_corner = []
+        cur_corner = []
         prev_corner_2 = []
         cur_corner_2 = []
         status = []
@@ -50,7 +63,7 @@ def getFrameToFrameTransform(videofilename, out_transform="transform.txt"):
         prev_corner_2 = np.asarray(prev_corner_2)
         cur_corner_2 = np.asarray(cur_corner_2)
 
-        T = np.zeros(shape=prev_grey.shape)
+        # T = np.zeros(shape=prev_grey.shape)
         T = cv2.estimateRigidTransform(prev_corner_2,cur_corner_2,False)
         if T is None:
             T = last_T
@@ -65,7 +78,6 @@ def getFrameToFrameTransform(videofilename, out_transform="transform.txt"):
         prev = cur
         prev_grey = cur_grey
 
-        out_transform.write("Frame: "+str(k)+"/"+str(max_frames)+" - good optical flow: "+str(len(prev_corner_2))+"\n")
         k+=1
 
     cap.release()

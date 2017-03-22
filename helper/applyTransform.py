@@ -4,25 +4,7 @@ import cv2
 
 HORIZONTAL_BORDER_CROP = 20
 
-
-def getFrameCount(videofilename):
-    #print "Getting frame count"
-    cap = cv2.VideoCapture(videofilename)
-    frame_count= 0
-    while(True):
-        ret, frame = cap.read()
-        if ret is True:
-            frame_count+=1
-        else:
-            break
-        # cv2.imshow('counting', frame)
-        # cv2.waitKey(20)
-    #print "Frame count = " + str(frame_count)
-    cap.release()
-    return frame_count
-
-def applyTransformation(videofilename, smooth_transform, frame_dim):
-    max_frames = getFrameCount(videofilename)
+def applyTransformation(videofilename, smooth_transform, frame_dim, max_frames):
     print "Applying transformation...",
     cap = cv2.VideoCapture(videofilename)
     output_filename = 'output.avi'
@@ -35,7 +17,7 @@ def applyTransformation(videofilename, smooth_transform, frame_dim):
     frame_width, frame_height = frame_dim
     aspect_ratio = frame_width / frame_height
     vert_border = HORIZONTAL_BORDER_CROP * aspect_ratio
-
+    print vert_border, frame_width, HORIZONTAL_BORDER_CROP, frame_height
     cropped_width = frame_width - 2*vert_border
     cropped_height = frame_height - 2*HORIZONTAL_BORDER_CROP
     cropped_dim = (cropped_width, cropped_height)
@@ -59,20 +41,19 @@ def applyTransformation(videofilename, smooth_transform, frame_dim):
         rows, cols, color = cur.shape
         size = (cols, rows)
         cur2 = cv2.warpAffine(cur, T, size)
-        #TODO: Fix this. An error is being thrown when cur2 is clipped but clipping is necessary.
-        #cur2 = cur2[ vert_border : -vert_border , HORIZONTAL_BORDER_CROP : -HORIZONTAL_BORDER_CROP ]
+        cur2 = cur2[vert_border:frame_width-vert_border, HORIZONTAL_BORDER_CROP:frame_height-HORIZONTAL_BORDER_CROP]
 
         out.write(cur2)
 
-        cv2.imshow("wtf", cur)
-        cv2.imshow("yikes", cur2)
-
-        canvas = np.zeros((rows,2*cols+10,3))
-        #cur_grey = cv2.cvtColor(cur,cv2.COLOR_BGR2GRAY)
-        #cur2_grey = cv2.cvtColor(cur2,cv2.COLOR_BGR2GRAY)
-        canvas[0:rows, 0:cols,0:3 ] = cur
-        canvas[0:rows, cols+10:2*cols+10, 0:3] = cur2
-        #cv2.imshow("Before and after", canvas)
+        cv2.imshow("Before stabilization", cur)
+        cv2.imshow("After stabilization", cur2)
+        #
+        # canvas = np.zeros((rows,2*cols+10,3))
+        # cur_grey = cv2.cvtColor(cur,cv2.COLOR_BGR2GRAY)
+        # cur2_grey = cv2.cvtColor(cur2,cv2.COLOR_BGR2GRAY)
+        # canvas[0:rows, 0:cols,0:3 ] = cur
+        # canvas[0:rows, cols+10:2*cols+10, 0:3] = cur2
+        # cv2.imshow("Before and after", canvas)
         cv2.waitKey(20)
 
     out.release()

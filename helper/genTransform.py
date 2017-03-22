@@ -9,9 +9,9 @@ def genSmoothTransform(frame_transforms, smooth_trajectories):
 
         ft = frame_transforms[i] #current
         st = smooth_trajectories[i] #target
-        t.x += ft.dx 
+        t.x += ft.dx
         t.y += ft.dy
-        t.a += ft.dz
+        t.a += ft.da
         tp = transform_param(st.x - t.x, st.y - t.y, st.a - t.a)
         tp2 = transform_param(ft.dx + tp.dx, ft.dy + tp.dy, ft.da + tp.da)
 

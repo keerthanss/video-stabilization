@@ -2,12 +2,10 @@ import math
 import numpy as np
 import cv2
 
-HORIZONTAL_BORDER_CROP = 20
-
 def applyTransformation(videofilename, smooth_transform, frame_dim, max_frames):
     print "Applying transformation...",
     cap = cv2.VideoCapture(videofilename)
-    output_filename = 'output.avi'
+    output_filename = videofilename.split('.')[0]+'_stabilized.avi'
 
     cap.set(1, 0) #moving cap to start of the video
     # max_frames = int(cap.get(cv2.cv.CV_CAP_PROP_FRAME_COUNT)
@@ -15,15 +13,21 @@ def applyTransformation(videofilename, smooth_transform, frame_dim, max_frames):
 
     T = np.empty((2,3),np.float64)
     frame_width, frame_height = frame_dim
-    aspect_ratio = frame_width / frame_height
+    aspect_ratio = float(frame_width) / frame_height
+    HORIZONTAL_BORDER_CROP = int((1-math.sqrt(0.7))/2*frame_width)
     vert_border = HORIZONTAL_BORDER_CROP * aspect_ratio
+    vert_border = int(vert_border)
     print vert_border, frame_width, HORIZONTAL_BORDER_CROP, frame_height
     cropped_width = frame_width - 2*vert_border
     cropped_height = frame_height - 2*HORIZONTAL_BORDER_CROP
     cropped_dim = (cropped_width, cropped_height)
 
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter(output_filename,fourcc, 20.0, cropped_dim)
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    codec = "MJPG"
+
+    fourcc = cv2.VideoWriter_fourcc(*codec)
+    writer = None
+    (h,w) = (None, None)
 
     for k in range(max_frames-1):
         ret, cur = cap.read()
@@ -43,7 +47,11 @@ def applyTransformation(videofilename, smooth_transform, frame_dim, max_frames):
         cur2 = cv2.warpAffine(cur, T, size)
         cur2 = cur2[vert_border:frame_width-vert_border, HORIZONTAL_BORDER_CROP:frame_height-HORIZONTAL_BORDER_CROP]
 
-        out.write(cur2)
+        if writer is None:
+            (h,w) = cur2.shape[:2]
+            writer = cv2.VideoWriter(output_filename, fourcc, fps, (w,h), True)
+
+        writer.write(cur2)
 
         cv2.imshow("Before stabilization", cur)
         cv2.imshow("After stabilization", cur2)
@@ -56,8 +64,8 @@ def applyTransformation(videofilename, smooth_transform, frame_dim, max_frames):
         # cv2.imshow("Before and after", canvas)
         cv2.waitKey(20)
 
-    out.release()
     cap.release()
+    writer.release()
     cv2.destroyAllWindows()
     print "Done"
     return output_filename

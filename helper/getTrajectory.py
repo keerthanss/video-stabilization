@@ -1,9 +1,9 @@
 #step 2
 from data import trajectory, transform_param
 
-def getImageTrajectory(frame_transforms):
+def getImageTrajectory(frame_transforms,output_filename='frame_to_frame_changes.txt'):
     print "Getting trajectories...",
-    fOut = open('frame_to_frame_changes.txt','w')
+    fOut = open(output_filename,'w')
     t = trajectory(0,0,0)
     image_trajectory = [] #trajectory at all frames
 

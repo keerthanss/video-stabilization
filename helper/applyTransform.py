@@ -29,7 +29,7 @@ def applyTransformation(videofilename, smooth_transform, frame_dim, max_frames):
     writer = None
     (h,w) = (None, None)
 
-    for k in range(max_frames-1):
+    for k in xrange(max_frames-1):
         ret, cur = cap.read()
         if not ret:
             break
@@ -63,6 +63,8 @@ def applyTransformation(videofilename, smooth_transform, frame_dim, max_frames):
         # canvas[0:rows, cols+10:2*cols+10, 0:3] = cur2
         # cv2.imshow("Before and after", canvas)
         cv2.waitKey(20)
+
+    writer.write(cur2)
 
     cap.release()
     writer.release()

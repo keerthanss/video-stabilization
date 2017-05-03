@@ -22,7 +22,7 @@ def plotGraph(smoothing_radius):
         else:
             plt.figure('Smoothed video')
             plt.title('Smoothing radius = '+ str(smoothing_radius))
-        plt.plot(frame_no,x,'r',label='X coordinate')
+        plt.plot(frame_no,x,'r--',label='X coordinate')
         plt.plot(frame_no,y,'b',label='Y coordinate')
         # plt.plot(frame_no,a,'g',label='Angle w.r.t horizontal')
         plt.xlabel('Frame number')

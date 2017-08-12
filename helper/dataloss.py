@@ -4,8 +4,6 @@ import numpy as np
 import cv2
 import sys
 
-videofilename = sys.argv[1]
-
 def findDataLoss(videofilename):
     cap = cv2.VideoCapture(videofilename)
     totalLoss=0.0
@@ -24,4 +22,7 @@ def findDataLoss(videofilename):
     cap.release()
     cv2.destroyAllWindows()
     return totalLoss/f
-print findDataLoss(videofilename)
+
+if __name__ == '__main__':
+    videofilename = sys.argv[1]
+    print findDataLoss(videofilename)

@@ -1,6 +1,7 @@
 import cv2
 from sys import argv
 from helper import *
+from helper.measure import *
 
 if __name__ == '__main__':
     videofilename = argv[1]
@@ -25,5 +26,8 @@ if __name__ == '__main__':
     smooth_transform = genSmoothTransform(transform, smooth_trajectory)
     #step5 - apply transformations and save video
     output_filename = applyTransformation(videofilename, smooth_transform, frame_dim, frame_count)
+
+    print 'Distortion in original video:', findDistortionOfVideo(videofilename)
+    print 'Distortion in stabilized video:', findDistortionOfVideo(output_filename)
 
     # plotGraph(smoothing_radius)

@@ -14,7 +14,10 @@ def applyTransformation(videofilename, smooth_transform, frame_dim, max_frames, 
     T = np.empty((2,3),np.float64)
     frame_width, frame_height = frame_dim
     aspect_ratio = float(frame_width) / frame_height
-    HORIZONTAL_BORDER_CROP = int((1-math.sqrt(0.7))/2*frame_width)
+    if(out_suffix == '_stabilized.avi'):
+        HORIZONTAL_BORDER_CROP = int((1-math.sqrt(0.7))/2*frame_width)
+    else:
+        HORIZONTAL_BORDER_CROP = 0
     vert_border = HORIZONTAL_BORDER_CROP * aspect_ratio
     vert_border = int(vert_border)
     print vert_border, frame_width, HORIZONTAL_BORDER_CROP, frame_height

@@ -58,9 +58,9 @@ def getEnergyConcentrationFromFrameTwoNew(no_of_bins, trajectory):
     # print type(energyY[0])
 
     for file in range(1):
-        energyEnd = (sum(energyX[file][:1+no_of_bins]**2) + sum(energyY[file][:1+no_of_bins]**2))**0.5
+        energyEnd = (sum(energyX[file][1:1+no_of_bins]) + sum(energyY[file][1:1+no_of_bins]))/2
 
-        energyTotal = (sum(energyX[file][:]**2) + sum(energyY[file][:]**2))**0.5
+        energyTotal = (sum(energyX[file][1:]) + sum(energyY[file][1:]))/2
 
         if file == 0:
             print "Original video:"
@@ -71,6 +71,6 @@ def getEnergyConcentrationFromFrameTwoNew(no_of_bins, trajectory):
         # print "Percentage of energy in the first",no_of_bins,"bins =",energyEnd/energyTotal*100
         print "energyTotal =", energyTotal
         print "energyEnd =", energyEnd
-        print "ratio =", energyEnd/energyTotal
+        print "ratio =", 2*energyEnd/energyTotal
 
-        return energyEnd/energyTotal
+        return 2*energyEnd/energyTotal

@@ -4,8 +4,7 @@ from sys import argv
 from averageWindow import *
 from genTransform import *
 from applyTransform import *
-from dataloss import *
-from stab_measure_new import *
+from measure import getEnergyConcentrationFromFrameTwoNew, findDataLoss
 import matplotlib.pyplot as plt
 
 def getRadiusValue(unsmoothedTrajectory, transform, videofilename, frame_dim, frame_count):
@@ -16,26 +15,15 @@ def getRadiusValue(unsmoothedTrajectory, transform, videofilename, frame_dim, fr
     datapoints = []
     smoothingRadius = 1
     dataLoss = 0
-    #while ( dataLoss < THRESHOLD_DATA_LOSS ):
-    for i in range(20):
-        #step 3
+    while ( dataLoss < THRESHOLD_DATA_LOSS and smoothingRadius < 40):
+    # for i in range(20):
         smooth_trajectory = getSmoothedTrajectory(unsmoothedTrajectory,smoothingRadius)
-
         energyConc = getEnergyConcentrationFromFrameTwoNew(NO_OF_BINS, smooth_trajectory)
-
-        #step 4
         smooth_transform = genSmoothTransform(transform, smooth_trajectory)
-
-        #step 5
         output_filename = applyTransformation(videofilename, smooth_transform, frame_dim, frame_count, '-intermediate.avi')
-
-        #DONE  Apply smoothed trajectory to get smoothed videofile
         dataLoss = findDataLoss(output_filename)
 
-        # Use the stability metric to get stability
-
         datapoints.append((smoothingRadius,dataLoss,energyConc))
-
         smoothingRadius += RADIUS_INCREMENT
 
     for dp in datapoints:

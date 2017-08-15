@@ -2,9 +2,7 @@ import numpy as np
 import cv2
 import sys
 
-videofilename = sys.argv[1]
-
-def findStabilityOfVideo(videofilename):
+def findDistortionOfVideo(videofilename):
     cap = cv2.VideoCapture(videofilename)
     ret, prev_frame = cap.read()
     prev_grey = cv2.cvtColor(prev_frame,cv2.COLOR_BGR2GRAY)
@@ -26,4 +24,6 @@ def findStabilityOfVideo(videofilename):
     cv2.destroyAllWindows()
     return stability/f/(frame_dim[0]*frame_dim[1]) #Average difference
 
-print findStabilityOfVideo(videofilename)
+if __name__ == '__main__':
+    videofilename = sys.argv[1]
+    print findDistortionOfVideo(videofilename)

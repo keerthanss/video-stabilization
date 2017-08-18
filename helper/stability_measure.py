@@ -3,6 +3,13 @@ import numpy as np
 from scipy.fftpack import fft
 import matplotlib.pyplot as plt
 from sys import argv
+import matplotlib.pylab as pylab
+params = {'legend.fontsize': 'xx-large',
+         'axes.labelsize': 'xx-large',
+         'axes.titlesize':'x-large',
+         'xtick.labelsize':'x-large',
+         'ytick.labelsize':'x-large'}
+pylab.rcParams.update(params)
 
 no_of_bins = int(argv[1])
 orig_video = argv[2].rsplit('.',1)[0]
@@ -50,7 +57,8 @@ def getFreqRepresentation():
     plt.plot(frame[1:],list(magxf[2][1:]),'g--',label='YouTube')
     plt.xlabel('Frequency')
     plt.ylabel('Amplitude of signal')
-    plt.legend()
+    plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+           ncol=2, mode="expand", borderaxespad=0.)
     plt.show()
 
     # plt.show()

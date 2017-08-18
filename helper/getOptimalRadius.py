@@ -6,6 +6,13 @@ from genTransform import *
 from applyTransform import *
 from measure import getEnergyConcentrationFromFrameTwoNew, findDataLoss
 import matplotlib.pyplot as plt
+import matplotlib.pylab as pylab
+params = {'legend.fontsize': 'x-large',
+         'axes.labelsize': 'xx-large',
+         'axes.titlesize':'x-large',
+         'xtick.labelsize':'x-large',
+         'ytick.labelsize':'x-large'}
+pylab.rcParams.update(params)
 
 def getRadiusValue(unsmoothedTrajectory, transform, videofilename, frame_dim, frame_count):
     THRESHOLD_DATA_LOSS = 0.1
@@ -60,8 +67,8 @@ def getRadiusValue(unsmoothedTrajectory, transform, videofilename, frame_dim, fr
     # ra_max = max(ratio_after)
     # ratio_after = [(elem-ra_min)/(ra_max-ra_min) for elem in ratio_after]
     dl[0] = temp
-    plt.plot(x_axis[1:-2],dl[1:-2],'r',label='Data loss (normalized)')
-    plt.plot(x_axis[1:-2],ec[1:-2],'g',label='Stability (normalized)')
+    plt.plot(x_axis[1:-2],dl[1:-2],'r:',label='Data loss (normalized)')
+    plt.plot(x_axis[1:-2],ec[1:-2],'g--',label='Stability (normalized)')
     # plt.plot(x_axis,ec_root,'g',label='log(ec)')
     # plt.plot(x_axis,dl_root,'y',label='dl_root')
     plt.plot(x_axis[1:-2],prod[1:-2],'b',label='Goodness')

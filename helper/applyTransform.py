@@ -2,10 +2,10 @@ import math
 import numpy as np
 import cv2
 
-def applyTransformation(videofilename, smooth_transform, frame_dim, max_frames):
+def applyTransformation(videofilename, smooth_transform, frame_dim, max_frames, out_suffix = '_stabilized.avi'):
     print "Applying transformation...",
     cap = cv2.VideoCapture(videofilename)
-    output_filename = videofilename.split('.')[0]+'_stabilized.avi'
+    output_filename = videofilename.split('.')[0]+out_suffix
 
     cap.set(1, 0) #moving cap to start of the video
     # max_frames = int(cap.get(cv2.cv.CV_CAP_PROP_FRAME_COUNT)
@@ -14,7 +14,10 @@ def applyTransformation(videofilename, smooth_transform, frame_dim, max_frames):
     T = np.empty((2,3),np.float64)
     frame_width, frame_height = frame_dim
     aspect_ratio = float(frame_width) / frame_height
-    HORIZONTAL_BORDER_CROP = int((1-math.sqrt(0.7))/2*frame_width)
+    if(out_suffix == '_stabilized.avi'):
+        HORIZONTAL_BORDER_CROP = int((1-math.sqrt(0.7))/2*frame_width)
+    else:
+        HORIZONTAL_BORDER_CROP = 0
     vert_border = HORIZONTAL_BORDER_CROP * aspect_ratio
     vert_border = int(vert_border)
     print vert_border, frame_width, HORIZONTAL_BORDER_CROP, frame_height
@@ -29,7 +32,7 @@ def applyTransformation(videofilename, smooth_transform, frame_dim, max_frames):
     writer = None
     (h,w) = (None, None)
 
-    for k in range(max_frames-1):
+    for k in xrange(max_frames-1):
         ret, cur = cap.read()
         if not ret:
             break
@@ -53,8 +56,9 @@ def applyTransformation(videofilename, smooth_transform, frame_dim, max_frames):
 
         writer.write(cur2)
 
-        cv2.imshow("Before stabilization", cur)
-        cv2.imshow("After stabilization", cur2)
+        if(out_suffix == '_stabilized.avi'):
+            cv2.imshow("Before stabilization", cur)
+            cv2.imshow("After stabilization", cur2)
         #
         # canvas = np.zeros((rows,2*cols+10,3))
         # cur_grey = cv2.cvtColor(cur,cv2.COLOR_BGR2GRAY)
@@ -63,6 +67,8 @@ def applyTransformation(videofilename, smooth_transform, frame_dim, max_frames):
         # canvas[0:rows, cols+10:2*cols+10, 0:3] = cur2
         # cv2.imshow("Before and after", canvas)
         cv2.waitKey(20)
+
+    writer.write(cur2)
 
     cap.release()
     writer.release()
